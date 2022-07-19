@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Web_openShift
 {
@@ -22,6 +22,24 @@ namespace Web_openShift
         }
 
         public IConfiguration Configuration { get; }
+
+
+        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            if (Directory.Exists("/var/run/secrets/kubernetes.io/serviceaccount"))
+                builder.AddJsonFile("/var/run/secrets/kubernetes.io/mysecretconfig", true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+
+            Console.WriteLine(Configuration["MySecret"]);
+        }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,6 +55,10 @@ namespace Web_openShift
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var builder = new ConfigurationBuilder()
+                        .SetBasePath(env.ContentRootPath)
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
