@@ -18,6 +18,13 @@ namespace Web_openShift
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(( httpcontext , configuration) => { 
+                
+                    if(httpcontext.HostingEnvironment.EnvironmentName== "LocalDev")
+                    {
+                        configuration.AddUserSecrets<Program>();
+                    }
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
