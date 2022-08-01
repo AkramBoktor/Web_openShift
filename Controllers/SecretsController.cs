@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,12 @@ namespace Web_openShift.Controllers
     [Route("Secrets")]
     public class SecretsController : Controller
     {
+        private readonly IConfiguration iconfiguration;
+
+        public SecretsController(IConfiguration configuration)
+        {
+            this.iconfiguration = configuration;
+        }
         [HttpGet("Secret")]
         public string Get()
         {
@@ -68,6 +75,22 @@ namespace Web_openShift.Controllers
             }
         }
 
-
+        /// <summary>
+        /// key=/etc/secret-volume/username
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [HttpGet("ReadEnv")]
+        public string ReadEnv(string env = "name")
+        {
+            try
+            {
+                return iconfiguration[env];
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
     }
 }
