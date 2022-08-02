@@ -75,11 +75,7 @@ namespace Web_openShift.Controllers
             }
         }
 
-        /// <summary>
-        /// key=/etc/secret-volume/username
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+       
         [HttpGet("ReadEnv")]
         public string ReadEnv(string env = "name")
         {
